@@ -13,3 +13,7 @@ keystore/
 # IDE
 .idea/
 *.iml
+
+# 分析用临时文件
+dump_hs_*.apk
+hs*.png
