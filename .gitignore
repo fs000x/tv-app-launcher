@@ -1,0 +1,15 @@
+# 构建产物
+build/
+build-phone/
+dist/
+phone/
+
+# 本地签名密钥（不要提交）
+keystore/
+
+# 工作区临时截图
+/*.png
+
+# IDE
+.idea/
+*.iml

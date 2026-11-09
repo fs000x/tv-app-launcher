@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">万能启动器</string>
+    <string name="title">应用与活动启动器</string>
+    <string name="hint">目标：打开 开发者选项 → 勾选 USB调试。点应用名可查看并启动其所有活动（灰色=未导出不可直接启动）</string>
+</resources>
