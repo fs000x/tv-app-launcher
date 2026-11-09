@@ -10,7 +10,11 @@ JBR="C:/Program Files/Android/Android Studio/jbr"
 JAVA="$JBR/bin/java.exe"
 JAVAC="$JBR/bin/javac.exe"
 JARTOOL="$JBR/bin/jar.exe"
-KS="C:/Users/momo/work/ai_work/TvApkInstaller/keystore/tv.jks"
+# ---- 签名密钥（与 build.sh 相同逻辑，可用 SIGN_* 环境变量覆盖）----
+KS="${SIGN_KS:-$PROJ/keystore/applauncher.jks}"
+KS_ALIAS="${SIGN_ALIAS:-applauncher}"
+KS_PASS="${SIGN_STORE_PASS:-pass:applauncher}"
+KEY_PASS="${SIGN_KEY_PASS:-$KS_PASS}"
 
 B="$PROJ/build-phone"
 rm -rf "$B"
@@ -36,10 +40,10 @@ SRCS=$(find "$B/gen" "$PROJ/app/src" -name '*.java')
 "$JARTOOL" cf "$B/app.jar" -C "$B/obj" .
 "$JAVA" -cp "$BT/lib/d8.jar" com.android.tools.r8.D8 --release \
   --lib "$PLATFORM" --min-api 17 --output "$B" "$B/app.jar"
-python "$PROJ/../TvApkInstaller/tools/add_dex.py" "$B/base.apk" "$B/classes.dex"
+python "$PROJ/tools/add_dex.py" "$B/base.apk" "$B/classes.dex"
 "$BT/zipalign.exe" -f 4 "$B/base.apk" "$B/aligned.apk"
 "$JAVA" -cp "$BT/lib/apksigner.jar" com.android.apksigner.ApkSignerTool sign \
-  --ks "$KS" --ks-pass pass:tv123456 --key-pass pass:tv123456 --ks-key-alias apkinst \
+  --ks "$KS" --ks-pass "$KS_PASS" --key-pass "$KEY_PASS" --ks-key-alias "$KS_ALIAS" \
   --min-sdk-version 17 --v1-signing-enabled true --v2-signing-enabled true \
   --out "$PROJ/dist/AppLauncher_v1.0_phone.apk" "$B/aligned.apk"
 "$BT/aapt2.exe" dump badging "$PROJ/dist/AppLauncher_v1.0_phone.apk" | grep -E "package:|sdkVersion|application-label"

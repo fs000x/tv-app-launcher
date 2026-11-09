@@ -16,9 +16,14 @@ English | [简体中文](#中文说明)
 
 ## Screenshots / 截图
 
-| 主界面 | 开发者选项直达 | 活动列表 |
-|---|---|---|
-| ![main](docs/screenshot-main.png) | ![dev](docs/screenshot-devoptions.png) | ![activities](docs/screenshot-activities.png) |
+| 主界面（海信实测） | 开发者选项直达 | 进入原生设置（海信实测） | 活动列表（海信实测） |
+|---|---|---|---|
+| ![main](docs/screenshot-main.png) | ![dev](docs/screenshot-devoptions.png) | ![native](docs/screenshot-nativesettings.png) | ![activities](docs/screenshot-activities.png) |
+
+> 海信 VIDAA ROM 实测发现：`BaseSettings` 被重定向到厂商"我的应用"，隐式
+> `android.settings.SETTINGS` 被劫持到 VIDAA 影视首页，开发者选项的实际类名是
+> `Settings$DevelopmentSettingsActivity`。因此本应用**优先使用显式组件名**，
+> 隐式 Intent 仅作兜底，并在界面上显示每次尝试的结果。
 
 ## Features / 特性
 

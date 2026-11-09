@@ -116,16 +116,18 @@ public class MainActivity extends Activity {
         Toast.makeText(this, "启动失败，详见右上角状态区", Toast.LENGTH_LONG).show();
     }
 
-    /** 开发者选项：隐式 action 优先，再试 AOSP 各版本常见组件名。 */
+    /** 开发者选项：显式组件名优先（确定性），隐式 Intent 兜底（部分 ROM 会劫持隐式 action）。 */
     private void openDevOptions() {
         List<Attempt> l = new ArrayList<Attempt>();
-        l.add(new Attempt("隐式 APPLICATION_DEVELOPMENT_SETTINGS",
-                new Intent("android.settings.APPLICATION_DEVELOPMENT_SETTINGS")));
         l.add(new Attempt(SETTINGS_PKG + "/.DevelopmentSettings",
                 new Intent().setClassName(SETTINGS_PKG, SETTINGS_PKG + ".DevelopmentSettings")));
         l.add(new Attempt(SETTINGS_PKG + "/.Settings$DevelopmentSettings",
                 new Intent().setClassName(SETTINGS_PKG, SETTINGS_PKG + ".Settings$DevelopmentSettings")));
-        l.add(new Attempt("隐式 android.provider.Settings.ACTION_SETTINGS(降级)",
+        l.add(new Attempt(SETTINGS_PKG + "/.Settings$DevelopmentSettingsActivity (海信 VIDAA 等)",
+                new Intent().setClassName(SETTINGS_PKG, SETTINGS_PKG + ".Settings$DevelopmentSettingsActivity")));
+        l.add(new Attempt("隐式 APPLICATION_DEVELOPMENT_SETTINGS",
+                new Intent("android.settings.APPLICATION_DEVELOPMENT_SETTINGS")));
+        l.add(new Attempt("隐式 android.settings.SETTINGS(降级)",
                 new Intent("android.settings.SETTINGS")));
         tryLaunch(l, "开发者选项");
     }
@@ -133,22 +135,24 @@ public class MainActivity extends Activity {
     /** 原生设置主页。 */
     private void openMainSettings() {
         List<Attempt> l = new ArrayList<Attempt>();
-        l.add(new Attempt("隐式 android.settings.SETTINGS",
-                new Intent("android.settings.SETTINGS")));
         l.add(new Attempt(SETTINGS_PKG + "/.Settings",
                 new Intent().setClassName(SETTINGS_PKG, SETTINGS_PKG + ".Settings")));
-        l.add(new Attempt("隐式(限定包名)",
+        l.add(new Attempt(SETTINGS_PKG + "/.BaseSettings (海信等)",
+                new Intent().setClassName(SETTINGS_PKG, SETTINGS_PKG + ".BaseSettings")));
+        l.add(new Attempt("隐式(限定包名) android.settings.SETTINGS",
                 new Intent("android.settings.SETTINGS").setPackage(SETTINGS_PKG)));
+        l.add(new Attempt("隐式 android.settings.SETTINGS",
+                new Intent("android.settings.SETTINGS")));
         tryLaunch(l, "原生设置");
     }
 
     /** 应用管理（原生）。 */
     private void openAppManagement() {
         List<Attempt> l = new ArrayList<Attempt>();
-        l.add(new Attempt("隐式 MANAGE_ALL_APPLICATIONS_SETTINGS",
-                new Intent("android.settings.MANAGE_ALL_APPLICATIONS_SETTINGS")));
         l.add(new Attempt(SETTINGS_PKG + "/.ManageApplications",
                 new Intent().setClassName(SETTINGS_PKG, SETTINGS_PKG + ".ManageApplications")));
+        l.add(new Attempt("隐式 MANAGE_ALL_APPLICATIONS_SETTINGS",
+                new Intent("android.settings.MANAGE_ALL_APPLICATIONS_SETTINGS")));
         l.add(new Attempt("隐式 APPLICATION_SETTINGS",
                 new Intent("android.settings.APPLICATION_SETTINGS")));
         tryLaunch(l, "应用管理");

@@ -47,11 +47,15 @@ JAVA="$JBR/bin/java.exe"; [ -f "$JAVA" ] || JAVA="$JBR/bin/java"
 JAVAC="$JBR/bin/javac.exe"; [ -f "$JAVAC" ] || JAVAC="$JBR/bin/javac"
 JARTOOL="$JBR/bin/jar.exe"; [ -f "$JARTOOL" ] || JARTOOL="$JBR/bin/jar"
 
-# ---- 本地签名密钥（首次自动生成）----
+# ---- 签名密钥 ----
+# 默认使用项目本地的 applauncher.jks（首次构建自动生成，密码 applauncher）。
+# 如需使用自己的密钥，设置环境变量：
+#   export SIGN_KS=/path/to/your.jks SIGN_ALIAS=your_alias SIGN_STORE_PASS=pass:xxx SIGN_KEY_PASS=pass:xxx
 mkdir -p "$PROJ/keystore"
-KS="$PROJ/keystore/applauncher.jks"
-KS_ALIAS=applauncher
-KS_PASS="pass:applauncher"
+KS="${SIGN_KS:-$PROJ/keystore/applauncher.jks}"
+KS_ALIAS="${SIGN_ALIAS:-applauncher}"
+KS_PASS="${SIGN_STORE_PASS:-pass:applauncher}"
+KEY_PASS="${SIGN_KEY_PASS:-$KS_PASS}"
 if [ ! -f "$KS" ]; then
   echo "== 生成本地签名密钥 keystore/applauncher.jks =="
   "$JBR/bin/keytool.exe" -genkeypair -keystore "$KS" -alias "$KS_ALIAS" \
@@ -104,12 +108,12 @@ python "$PROJ/tools/add_dex.py" "$B/base.apk" "$B/classes.dex"
 
 echo "== 签名（v1+v2）=="
 "$JAVA" -cp "$BT/lib/apksigner.jar" com.android.apksigner.ApkSignerTool sign \
-  --ks "$KS" --ks-pass "$KS_PASS" --key-pass "$KS_PASS" \
+  --ks "$KS" --ks-pass "$KS_PASS" --key-pass "$KEY_PASS" \
   --ks-key-alias "$KS_ALIAS" --min-sdk-version 17 \
   --v1-signing-enabled true --v2-signing-enabled true --v3-signing-enabled false \
   --out "$PROJ/dist/AppLauncher_v1.0.apk" "$B/aligned.apk" \
   || "$JAVA" -cp "$BT/lib/apksigner.jar" com.android.apksigner.ApkSignerTool sign \
-  --ks "$KS" --ks-pass "$KS_PASS" --key-pass "$KS_PASS" \
+  --ks "$KS" --ks-pass "$KS_PASS" --key-pass "$KEY_PASS" \
   --ks-key-alias "$KS_ALIAS" --min-sdk-version 17 \
   --v1-signing-enabled true --v2-signing-enabled true --v3-signing-enabled false \
   --out "$PROJ/dist/AppLauncher_v1.0.apk" "$B/aligned.apk"
